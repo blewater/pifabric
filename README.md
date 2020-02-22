@@ -23,7 +23,60 @@ Follow the instructions to [install \*64bit Ubuntu 19.10.](https://ubuntu.com/do
 *Please note Hyperledger Fabric requires 64bit OS which excludes the Raspbian OS.
 
 Login to Ubuntu:
+
   user: ubuntu
-  pwd: ubuntu. You will be forced to change your password :)
   
+  pwd: ubuntu
+*You will be forced to change your password* :)
+
+### Software updates (when applicable we will use snap to speed up lthe installation process)
+* Ubuntu updates
+Refer to answers https://askubuntu.com/questions/196768/how-to-install-updates-via-command-line
+
+* sudo reboot
+
+* login
+
+* run uname -a
+
+*(at the time of this writeup the latest Linux ARM kernel is 5.3.0-1018-raspi2)*
+
+* Optionally, you may follow a Ubuntu guide to set a statip IP address and SSH access by public key. 
+
+Refer to /etc/netplan apply, ssh-copy-id
+  
+* Install **docker** Run these commands:
+```
+sudo snap install docker
+
+sudo groupadd docker
+
+sudo usermod -aG docker ${USER}
+
+logout
+
+login
+
+docker run hello-world 
+# should download and run the hello-world image without requiring sudo access
+
+docker-compose version
+# displays version 1.23.2+
+```
+* install go language compiler/linker binaries
+```
+sudo snap install --channel=1.11/stable go --classic
+nano ~/.bashrc
+# add the following last line
+export GOPATH=~/go
+# save & exit
+source ~/.bashrc
+mkdir -p ~/go
+```
+
+
+
+
+
+
 

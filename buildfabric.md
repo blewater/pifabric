@@ -21,13 +21,30 @@ git clone https://github.com/hyperledger/fabric-chaincode-go
 ## Building the base images (couchdb, kakfa, zookeeper)
 
 ```
-git clone https://github.com/blewater/pifabric
-cp -r ./pifabric/baseimage/* ./fabric-baseimage/
+sudo apt install make #install make
 
-sudo apt install make
+# install this guide's ARM patch
+git clone https://github.com/blewater/pifabric
+
+# patch fabric-baseimage with ARM64 changes
+cp -r ./pifabric/fabric-baseimage/* ./fabric-baseimage/
 
 cd fabric-baseimage
 
+git status 
+# should display the following patched changes
+```
+![image of git changes](./base-images-changes.png)
+
+nano Makefile
+on line 78,79 enter your dockerhub credentials
+
+    --username=blewater \
+    --password=xxxxxxxxxx \
+
+### Start the lenghthy build process
+
+```
 make all
 ```
 

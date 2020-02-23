@@ -66,15 +66,98 @@ docker-compose version
 * install go language compiler/linker binaries
 ```
 sudo snap install --channel=1.11/stable go --classic
+
 nano ~/.bashrc
+
 # add the following last line
 export GOPATH=~/go
+
 # save & exit
 source ~/.bashrc
-mkdir -p ~/go
-
-cd pifabric
 ```
+
+### Getting Ready to work with Fabric
+```
+mkdir -p ~/go/src/github.com/hyperledger/
+cd ~/go/src/github.com/hyperledger/
+
+# download the repo of this page
+git clone https://github.com/blewater/pifabric
+
+# retrieve the fabric-samples we will work with
+git clone https://github.com/hyperledger/fabric-samples
+
+# download raspberrypi Docker images
+cd pifabric
+./get-images.sh
+
+# check images for a similar result as this
+docker images
+REPOSITORY                   TAG                         IMAGE ID            CREATED             SIZE
+blewater/fabric-ca           latest                      1f5796cac18c        19 hours ago        177MB
+blewater/fabric-tools        latest                      f82fe2f8d301        19 hours ago        1.49GB
+blewater/fabric-buildenv     latest                      1d0ccc3dfc1a        20 hours ago        1.43GB
+blewater/fabric-ccenv        latest                      968779ee5bb2        20 hours ago        1.4GB
+blewater/fabric-orderer      latest                      76e57fc8518c        20 hours ago        111MB
+blewater/fabric-peer         latest                      9b02746c9cf4        20 hours ago        118MB
+blewater/fabric-zookeeper    latest                      969207ec1a59        21 hours ago        497MB
+blewater/fabric-kafka        latest                      3819183d7baa        21 hours ago        491MB
+blewater/fabric-couchdb      latest                      16dd2c814964        21 hours ago        246MB
+blewater/fabric-baseimage    latest                      fd1c6de7680f        21 hours ago        1.34GB
+blewater/fabric-baseos       latest                      2954a8577995        24 hours ago        78.6MB
+```
+
+### Start an one org network blockchain
+```
+cd ../fabric-samples/basic-network
+
+# generate static cryptographic material
+./generate.sh
+
+# a successful invocation should output this
+2020-02-23 21:06:20.537 UTC [common.tools.configtxgen] main -> INFO 001 Loading configuration
+2020-02-23 21:06:20.544 UTC [common.tools.configtxgen.localconfig] Load -> INFO 002 Loaded configuration: /home/p/go/src/github.com/hyperledger/fabric-samples/basic-network/configtx.yaml
+2020-02-23 21:06:20.550 UTC [common.tools.configtxgen.localconfig] completeInitialization -> INFO 003 orderer type: solo
+2020-02-23 21:06:20.550 UTC [common.tools.configtxgen.localconfig] LoadTopLevel -> INFO 004 Loaded configuration: /home/p/go/src/github.com/hyperledger/fabric-samples/basic-network/configtx.yaml
+2020-02-23 21:06:20.550 UTC [common.tools.configtxgen] doOutputAnchorPeersUpdate -> INFO 005 Generating anchor peer update
+2020-02-23 21:06:20.550 UTC [common.tools.configtxgen] doOutputAnchorPeersUpdate -> INFO 006 Writing anchor peer update
+
+# now start the network
+./start.sh
+
+# check for the final result of joining a channel
+
+Creating network "net_basic" with the default driver
+Creating orderer.example.com ... done
+Creating ca.example.com      ... done
+Creating couchdb             ... done
+Creating peer0.org1.example.com ... done
+docker ps -a
+CONTAINER ID        IMAGE                        COMMAND                  CREATED             STATUS                     PORTS                                            NAMES
+28cbda73124c        hyperledger/fabric-peer      "peer node start"        4 seconds ago       Up Less than a second      0.0.0.0:7051->7051/tcp, 0.0.0.0:7053->7053/tcp   peer0.org1.example.com
+db02bf6cc6c7        hyperledger/fabric-couchdb   "tini -- /docker-ent…"   8 seconds ago       Up 3 seconds               4369/tcp, 9100/tcp, 0.0.0.0:5984->5984/tcp       couchdb
+bf4b1e70900e        hyperledger/fabric-ca        "sh -c 'fabric-ca-se…"   8 seconds ago       Exited (1) 2 seconds ago                                                    ca.example.com
+f3622bdd58f6        hyperledger/fabric-orderer   "orderer"                8 seconds ago       Up 4 seconds               0.0.0.0:7050->7050/tcp                           orderer.example.com
+
+# wait for Hyperledger Fabric to start
+# incase of errors when running later commands, issue export FABRIC_START_TIMEOUT=<larger number>
+export FABRIC_START_TIMEOUT=10
+#echo ${FABRIC_START_TIMEOUT}
+sleep ${FABRIC_START_TIMEOUT}
+
+# Create the channel
+docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" peer0.org1.example.com peer channel create -o orderer.example.com:7050 -c mychannel -f /etc/hyperledger/configtx/channel.tx
+2020-02-23 21:12:25.431 UTC [channelCmd] InitCmdFactory -> INFO 001 Endorser and orderer connections initialized
+2020-02-23 21:12:25.534 UTC [cli.common] readBlock -> INFO 002 Received block: 0
+# Join peer0.org1.example.com to the channel.
+docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" peer0.org1.example.com peer channel join -b mychannel.block
+2020-02-23 21:12:26.326 UTC [channelCmd] InitCmdFactory -> INFO 001 Endorser and orderer connections initialized
+2020-02-23 21:12:26.712 UTC [channelCmd] executeJoin -> INFO 002 Successfully submitted proposal to join channel
+```
+
+
+
+
 
 
 

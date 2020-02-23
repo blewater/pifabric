@@ -145,4 +145,6 @@ hyperledger/fabric-baseos      latest                           2954a8577995    
 blewater/fabric-baseos         latest                           2954a8577995        22 hours ago        78.6MB
 
 # You may now follow the docker hub instructions to push your images to your repo
+
+# enjoy :)
 ```

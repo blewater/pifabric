@@ -93,21 +93,32 @@ cd pifabric
 
 # check images for a similar result as this
 docker images
-REPOSITORY                   TAG                         IMAGE ID            CREATED             SIZE
-blewater/fabric-ca           latest                      1f5796cac18c        19 hours ago        177MB
-blewater/fabric-tools        latest                      f82fe2f8d301        19 hours ago        1.49GB
-blewater/fabric-buildenv     latest                      1d0ccc3dfc1a        20 hours ago        1.43GB
-blewater/fabric-ccenv        latest                      968779ee5bb2        20 hours ago        1.4GB
-blewater/fabric-orderer      latest                      76e57fc8518c        20 hours ago        111MB
-blewater/fabric-peer         latest                      9b02746c9cf4        20 hours ago        118MB
-blewater/fabric-zookeeper    latest                      969207ec1a59        21 hours ago        497MB
-blewater/fabric-kafka        latest                      3819183d7baa        21 hours ago        491MB
-blewater/fabric-couchdb      latest                      16dd2c814964        21 hours ago        246MB
-blewater/fabric-baseimage    latest                      fd1c6de7680f        21 hours ago        1.34GB
-blewater/fabric-baseos       latest                      2954a8577995        24 hours ago        78.6MB
+REPOSITORY                     TAG                         IMAGE ID            CREATED             SIZE
+blewater/fabric-ca             latest                      1f5796cac18c        19 hours ago        177MB
+hyperledger/fabric-ca          latest                      1f5796cac18c        19 hours ago        177MB
+blewater/fabric-tools          latest                      f82fe2f8d301        20 hours ago        1.49GB
+hyperledger/fabric-tools       latest                      f82fe2f8d301        20 hours ago        1.49GB
+blewater/fabric-buildenv       latest                      1d0ccc3dfc1a        20 hours ago        1.43GB
+hyperledger/fabric-buildenv    latest                      1d0ccc3dfc1a        20 hours ago        1.43GB
+blewater/fabric-ccenv          latest                      968779ee5bb2        20 hours ago        1.4GB
+hyperledger/fabric-ccenv       latest                      968779ee5bb2        20 hours ago        1.4GB
+blewater/fabric-orderer        latest                      76e57fc8518c        20 hours ago        111MB
+hyperledger/fabric-orderer     latest                      76e57fc8518c        20 hours ago        111MB
+blewater/fabric-peer           latest                      9b02746c9cf4        20 hours ago        118MB
+hyperledger/fabric-peer        latest                      9b02746c9cf4        20 hours ago        118MB
+blewater/fabric-zookeeper      latest                      969207ec1a59        21 hours ago        497MB
+hyperledger/fabric-zookeeper   latest                      969207ec1a59        21 hours ago        497MB
+blewater/fabric-kafka          latest                      3819183d7baa        21 hours ago        491MB
+hyperledger/fabric-kafka       latest                      3819183d7baa        21 hours ago        491MB
+blewater/fabric-couchdb        latest                      16dd2c814964        21 hours ago        246MB
+hyperledger/fabric-couchdb     latest                      16dd2c814964        21 hours ago        246MB
+blewater/fabric-baseimage      latest                      fd1c6de7680f        22 hours ago        1.34GB
+hyperledger/fabric-baseimage   latest                      fd1c6de7680f        22 hours ago        1.34GB
+blewater/fabric-baseos         latest                      2954a8577995        24 hours ago        78.6MB
+hyperledger/fabric-baseos      latest                      2954a8577995        24 hours ago        78.6MB
 ```
 
-### Start an one org network blockchain
+### Start an one organization network blockchain
 ```
 cd ../fabric-samples/basic-network
 
@@ -153,6 +164,15 @@ docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/h
 docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" peer0.org1.example.com peer channel join -b mychannel.block
 2020-02-23 21:12:26.326 UTC [channelCmd] InitCmdFactory -> INFO 001 Endorser and orderer connections initialized
 2020-02-23 21:12:26.712 UTC [channelCmd] executeJoin -> INFO 002 Successfully submitted proposal to join channel
+```
+
+### Getting to the chaincodes
+```
+# launch the fabric-tools container for chaincode interaction
+# look for "Creating cli ... done"
+docker-compose up -d cli
+
+
 ```
 
 

@@ -72,6 +72,8 @@ export GOPATH=~/go
 # save & exit
 source ~/.bashrc
 mkdir -p ~/go
+
+cd pifabric
 ```
 
 

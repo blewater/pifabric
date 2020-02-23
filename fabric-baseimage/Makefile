@@ -18,7 +18,7 @@
 
 DOCKER_NS ?= hyperledger
 BASENAME ?= $(DOCKER_NS)/fabric
-VERSION ?= 0.4.19
+VERSION ?= 0.4.18
 IS_RELEASE=false
 DOCKER_BASE_arm64=aarch64/ubuntu:bionic
 

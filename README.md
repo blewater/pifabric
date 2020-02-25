@@ -381,15 +381,15 @@ You may explore more with the [Fabric tutorials for chaincode development](https
 
 Launched 4 [watch](https://linux.die.net/man/1/watch) processes each invoking the samplecc chaincode with sensor readings every 5, 7, 10 and 20 seconds appears to put no pressure on the latest Pi rendition. 
 
-Granted that this is among the simplest blockchain offerings, it is still no small feat for a $65 board to pull through with a low cpu energy profile. The is the  basic network--a single organization blockchain with a single peer, orderer, transaction endorser and couchdb ledger database featuring the simplistic Solo consensus algorithm all runnning in docker containers. All portrayed sessions are employing ssh. In fact, it appears that the single sensor interface contention among the 4 processes appears to consume the most cpu resources.![4 ssh connections ](./img/4 nodes invoking chaincodes.png)
+Granted that this is among the simplest blockchain offerings, it is still no small feat for a $65 board to pull through with a low cpu energy profile. The is the  basic network--a single organization blockchain with a single peer, orderer, transaction endorser and couchdb ledger database featuring the simplistic Solo consensus algorithm all runnning in docker containers. All portrayed sessions are employing ssh. In fact, it appears that the single sensor interface contention among the 4 processes appears to consume the most cpu resources.![4 ssh connections ](img/4-nodes-invoking-chaincodes.png)
   
  #### How can you view the accumulated ledger data?
  
- Hyperledger Fabric offers the CouchDB document database (besides other lesser sophisticated options) for all its ledger (world state) and private data collections. Looking at the Pi's couchDb exposed port at 5984 the channe's ledger is actual document collection.You may choose among 3 viewing options: List, Metadata and Json i.e., shown here![couchdb](./img/2 chaincodes ledger records.png)
+ Hyperledger Fabric offers the CouchDB document database (besides other lesser sophisticated options) for all its ledger (world state) and private data collections. Looking at the Pi's couchDb exposed port at 5984 the channe's ledger is actual document collection.You may choose among 3 viewing options: List, Metadata and Json i.e., shown here![couchdb](img/2-chaincodes-ledger-records.png)
  
  #### IoT Blockchain Data Analytics.
  
- By offering easy data export, Hyperledger Fabric offers a no-hassle data-friendly IoT blockchain platform. The data can easily be exported in json format for later machine-learning platforms ingestion. While this exercise, did not demonstrate Fabric's chaincode query capabilities, one may view documentation for performing simple state or richer document based queries.![exported data](./img/full-ledger-by-4-nodes.png)
+ By offering easy data export, Hyperledger Fabric offers a no-hassle data-friendly IoT blockchain platform. The data can easily be exported in json format for later machine-learning platforms ingestion. While this exercise, did not demonstrate Fabric's chaincode query capabilities, one may view documentation for performing simple state or richer document based queries.![exported data](img/full-ledger-by-4-nodes.png)
  
  
 

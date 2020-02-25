@@ -6,6 +6,7 @@ package main
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	pb "github.com/hyperledger/fabric/protos/peer"
@@ -13,6 +14,14 @@ import (
 
 // SamplingChaincode for sampling temperature, humidity
 type SamplingChaincode struct {
+}
+
+type sampling struct {
+	ObjectType string    `json:"docType"`  // docType is used to distinguish the various types of objects in state database
+	Node       string    `json:"node"`     // sending node
+	Temp       string    `json:"temp"`     // temperature reading
+	Humidity   string    `json:"humidity"` // humidity reading
+	AppendedAt time.Time `json:"appendedAt"`
 }
 
 func parseReading(reading string) (temp string, humid string) {
@@ -27,7 +36,7 @@ func (t *SamplingChaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
 	fmt.Println("samplingChaincode Init")
 	args := stub.GetStringArgs()
 
-	return setLedger(args, stub)
+	return appendLedger(args, stub)
 }
 
 // Invoke calls a chaincode function multiple time to perform a ledger function
@@ -36,15 +45,15 @@ func (t *SamplingChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response
 	fmt.Println("samplingChaincode Invoke")
 	args := stub.GetStringArgs()
 
-	return setLedger(args, stub)
+	return appendLedger(args, stub)
 }
 
-func setLedger(args []string, stub shim.ChaincodeStubInterface) pb.Response {
+func appendLedger(args []string, stub shim.ChaincodeStubInterface) pb.Response {
 	if len(args) != 2 {
 		return shim.Error("Incorrect number of arguments. Expecting 2")
 	}
 
-	if err := SaveReading(args, stub); err != nil {
+	if err := saveSampling(args, stub); err != nil {
 
 		return shim.Error(err.Error())
 	}
@@ -52,20 +61,20 @@ func setLedger(args []string, stub shim.ChaincodeStubInterface) pb.Response {
 	return shim.Success(nil)
 }
 
-func SaveReading(args []string, stub shim.ChaincodeStubInterface) error {
-	samplingLocation := args[0]
+func saveSampling(args []string, stub shim.ChaincodeStubInterface) error {
+	nodeIPAddress := args[0]
 	temperatureVal, humidityVal := parseReading(args[1])
 
 	fmt.Printf("From node: %s, Temp in Celsius = %s, Humidity = %s\n",
-		samplingLocation, temperatureVal, humidityVal)
+		nodeIPAddress, temperatureVal, humidityVal)
 
-	// Write the state to the ledger
-	if err := stub.PutState(samplingLocation+", Temperature in C", []byte(temperatureVal)); err != nil {
+	samplingJSONasString := `{"docType":"sampling",  "node": "` + nodeIPAddress + `", "Celsius temperature": "` +
+		temperatureVal + `", "humidity": ` + humidityVal + `, "appendedAt": "` +
+		time.Now().String() + `"}`
+	samplingJSONasBytes := []byte(samplingJSONasString)
 
-		return err
-	}
-
-	if err := stub.PutState(samplingLocation+", Humidity %", []byte(humidityVal)); err != nil {
+	// Write / append the state to the ledger
+	if err := stub.PutState("sampling", samplingJSONasBytes); err != nil {
 
 		return err
 	}

@@ -140,6 +140,12 @@ blewater/fabric-baseimage      latest                      fd1c6de7680f        2
 hyperledger/fabric-baseimage   latest                      fd1c6de7680f        22 hours ago        1.34GB
 blewater/fabric-baseos         latest                      2954a8577995        24 hours ago        78.6MB
 hyperledger/fabric-baseos      latest                      2954a8577995        24 hours ago        78.6MB
+
+# now copy Fabric raspberry binaries built in the fabric-tools Docker image
+# ease they are also included in this repo
+chmod +x ./bin/*
+chmod +x *.sh
+sudo cp ./bin/* /usr/local/bin
 ```
 
 ### Start an one organization network blockchain
@@ -261,6 +267,13 @@ In file included from /usr/include/aarch64-linux-gnu/bits/libc-header-start.h:33
   185 | # warning "_BSD_SOURCE and _SVID_SOURCE are deprecated, use _DEFAULT_SOURCE"
       |   ^~~~~~~
 # github.com/gerp/dht22
+In file included from /usr/include/aarch64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:25,
+                 from _cgo_export.c:3:
+/usr/include/features.h:185:3: warning: #warning "_BSD_SOURCE and _SVID_SOURCE are deprecated, use _DEFAULT_SOURCE" [-Wcpp]
+  185 | # warning "_BSD_SOURCE and _SVID_SOURCE are deprecated, use _DEFAULT_SOURCE"
+      |   ^~~~~~~
+# github.com/gerp/dht22
 In file included from /usr/include/errno.h:25,
                  from cgo-gcc-prolog:28:
 /usr/include/features.h:185:3: warning: #warning "_BSD_SOURCE and _SVID_SOURCE are deprecated, use _DEFAULT_SOURCE" [-Wcpp]
@@ -273,14 +286,13 @@ In file included from /usr/include/aarch64-linux-gnu/bits/libc-header-start.h:33
 /usr/include/features.h:185:3: warning: #warning "_BSD_SOURCE and _SVID_SOURCE are deprecated, use _DEFAULT_SOURCE" [-Wcpp]
   185 | # warning "_BSD_SOURCE and _SVID_SOURCE are deprecated, use _DEFAULT_SOURCE"
       |   ^~~~~~~
-dht22.c:12:10: fatal error: bcm2835.h: No such file or directory
-   12 | #include <bcm2835.h>
-      |          ^~~~~~~~~~~
-compilation terminated.
 
-# the last line is what matters
 # test our sample program
-go run sample.go
+cd ../
+sudo -E go run sample.go
+
+# if successful results in 
+Temperature: 25.3C, Humidity: 40.9%
 ```
 
 ### Getting to the chaincodes
@@ -288,19 +300,65 @@ go run sample.go
 # copy chaincode into peer bound chaincode folder
 cp -R ./samplecc ../fabric-samples/chaincode/
 
-# install dependencies
-cd ../fabric-samples/chaincode/samplecc
-go build
+# go to the source cc folder
+cd ../fabric-samples/chaincode/samplecc/
 
+# test build
+go build 
+
+# no news is good news :)
 ```
 
+### Run the chaincode
+```
+# back to pifabric folder
+cd ../../../pifabric
 
+# * Run Once *
+# install chaincode
+# Two options
+# run this 
+docker exec cli peer chaincode install -n samplecc -v 0 -p github.com/samplecc
 
+# or this
+./1.installcc.sh
 
+# a successful installation result
+2020-02-25 02:44:51.088 UTC [chaincodeCmd] checkChaincodeCmdParams -> INFO 001 Using default escc
+2020-02-25 02:44:51.088 UTC [chaincodeCmd] checkChaincodeCmdParams -> INFO 002 Using default vscc
+2020-02-25 02:44:51.859 UTC [chaincodeCmd] install -> INFO 003 Installed remotely response:<status:200 payload:"OK" >
 
+# * Run Once *
+* invoke chaincode
+# requires priviledged sudo access for accessing 
+# the sensor functions to initiate the chaincode
+# it also saves the first sampling in the ledger
+./2.initcc.sh
 
+# Run as many times as needed
+# sample the sensor temp in Celsius and humidity %
+# append to the ledger
+./3.invokecc.sh
 
+# access results from the couchdb instance
+# from any browser within the same access subnet
+# run and select the eth0 or wifi 
+ip r
 
+default via 192.168.2.1 dev eth0 proto static
+172.17.0.0/16 dev docker0 proto kernel scope link src 172.17.0.1 linkdown
+172.27.0.0/16 dev br-32a73e9a7d3b proto kernel scope link src 172.27.0.1
+192.168.2.0/24 dev eth0 proto kernel scope link src 192.168.2.242
+
+# in this case it's the 192.168.2.242 and 5984
+# the port also shows when executing docker ps and checking out the docker port
+```
+#### http://192.168.2.242:5984/_utils/
+click on 
+**mychannel_samplecc**
+the ledger for the mychannel to view the saved readings
+
+That is it for now.  You may explore more with the [Fabric tutorials for chaincode development](https://hyperledger-fabric.readthedocs.io/en/release-1.4/tutorials.html)
 
 
 

@@ -74,6 +74,27 @@ export GOPATH=~/go
 
 # save & exit
 source ~/.bashrc
+
+# retrieve the golang chaincode shim useful later
+go get -u github.com/hyperledger/fabric/core/chaincode/shim
+
+# sync your user's path to sudo
+# you will need this for sampling data
+echo $PATH
+
+# copy the value
+# sudo visudo 
+# append the path value within the secure path
+# value with : upfront
+# test go in sudo mode
+# Demo from my Pi
+ echo $PATH
+
+/home/p/.nvm/versions/node/v8.17.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/usr/local/go/bin
+p@masterpi:~/go/src/github.com/hyperledger/pifabric$ sudo visudo
+p@masterpi:~/go/src/github.com/hyperledger/pifabric$ sudo go version
+go version go1.11.13 linux/arm64
+p@masterpi:~/go/src/github.com/hyperledger/pifabric$
 ```
 
 ### Getting Ready to work with Fabric
@@ -86,6 +107,9 @@ git clone https://github.com/blewater/pifabric
 
 # retrieve the fabric-samples we will work with
 git clone https://github.com/hyperledger/fabric-samples
+
+# retrieve the chaincode shim useful later
+go get -u github.com/hyperledger/fabric/core/chaincode/shim
 
 # download raspberrypi Docker images
 cd pifabric
@@ -166,12 +190,107 @@ docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/h
 2020-02-23 21:12:26.712 UTC [channelCmd] executeJoin -> INFO 002 Successfully submitted proposal to join channel
 ```
 
-### Getting to the chaincodes
+### Groundwork for the chaincode run
 ```
 # launch the fabric-tools container for chaincode interaction
-# look for "Creating cli ... done"
 docker-compose up -d cli
+# look for "Creating cli ... done"
+```
 
+### Install a C DHT22 raspberry lib
+#### Ref http://www.airspayce.com/mikem/bcm2835/
+```
+cd ../../pifabric
+
+tar zxvf bcm2835-1.62.tar.gz
+
+cd bcm2835-1.62
+
+./configure
+
+make
+# make sure the check returns good results 
+sudo make check
+
+PASS: test
+============================================================================
+Testsuite summary for bcm2835 1.62
+============================================================================
+# TOTAL: 1
+# PASS:  1
+# SKIP:  0
+# XFAIL: 0
+# FAIL:  0
+# XPASS: 0
+# ERROR: 0
+============================================================================
+
+sudo make install
+
+Making install in src
+make[1]: Entering directory '/home/p/unic/bcm2835-1.62/src'
+make[2]: Entering directory '/home/p/unic/bcm2835-1.62/src'
+ /usr/bin/mkdir -p '/usr/local/lib'
+ /usr/bin/install -c -m 644  libbcm2835.a '/usr/local/lib'
+ ( cd '/usr/local/lib' && ranlib libbcm2835.a )
+ /usr/bin/mkdir -p '/usr/local/include'
+ /usr/bin/install -c -m 644 bcm2835.h '/usr/local/include'
+make[2]: Leaving directory '/home/p/unic/bcm2835-1.62/src'
+make[1]: Leaving directory '/home/p/unic/bcm2835-1.62/src'
+Making install in doc
+make[1]: Entering directory '/home/p/unic/bcm2835-1.62/doc'
+make[2]: Entering directory '/home/p/unic/bcm2835-1.62/doc'
+make[2]: Nothing to be done for 'install-exec-am'.
+make[2]: Nothing to be done for 'install-data-am'.
+make[2]: Leaving directory '/home/p/unic/bcm2835-1.62/doc'
+make[1]: Leaving directory '/home/p/unic/bcm2835-1.62/doc'
+make[1]: Entering directory '/home/p/unic/bcm2835-1.62'
+make[2]: Entering directory '/home/p/unic/bcm2835-1.62'
+make[2]: Nothing to be done for 'install-exec-am'.
+make[2]: Nothing to be done for 'install-data-am'.
+make[2]: Leaving directory '/home/p/unic/bcm2835-1.62'
+make[1]: Leaving directory '/home/p/unic/bcm2835-1.62'
+
+# now we are ready to install the go wrapper
+go get -u github.com/gerp/dht22
+# github.com/gerp/dht22
+In file included from /usr/include/aarch64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:25,
+                 from _cgo_export.c:3:
+/usr/include/features.h:185:3: warning: #warning "_BSD_SOURCE and _SVID_SOURCE are deprecated, use _DEFAULT_SOURCE" [-Wcpp]
+  185 | # warning "_BSD_SOURCE and _SVID_SOURCE are deprecated, use _DEFAULT_SOURCE"
+      |   ^~~~~~~
+# github.com/gerp/dht22
+In file included from /usr/include/errno.h:25,
+                 from cgo-gcc-prolog:28:
+/usr/include/features.h:185:3: warning: #warning "_BSD_SOURCE and _SVID_SOURCE are deprecated, use _DEFAULT_SOURCE" [-Wcpp]
+  185 | # warning "_BSD_SOURCE and _SVID_SOURCE are deprecated, use _DEFAULT_SOURCE"
+      |   ^~~~~~~
+# github.com/gerp/dht22
+In file included from /usr/include/aarch64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdio.h:27,
+                 from dht22.c:1:
+/usr/include/features.h:185:3: warning: #warning "_BSD_SOURCE and _SVID_SOURCE are deprecated, use _DEFAULT_SOURCE" [-Wcpp]
+  185 | # warning "_BSD_SOURCE and _SVID_SOURCE are deprecated, use _DEFAULT_SOURCE"
+      |   ^~~~~~~
+dht22.c:12:10: fatal error: bcm2835.h: No such file or directory
+   12 | #include <bcm2835.h>
+      |          ^~~~~~~~~~~
+compilation terminated.
+
+# the last line is what matters
+# test our sample program
+go run sample.go
+```
+
+### Getting to the chaincodes
+```
+# copy chaincode into peer bound chaincode folder
+cp -R ./samplecc ../fabric-samples/chaincode/
+
+# install dependencies
+cd ../fabric-samples/chaincode/samplecc
+go build
 
 ```
 

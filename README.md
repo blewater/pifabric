@@ -1,7 +1,7 @@
 # Hyperledger Fabric Chaincode for 64-bit Raspberry-Pi4 and Pi3
 Batteries included: utilize the prepared Fabric [Docker Images](https://hub.docker.com/r/blewater).
 
-If you would rather build the Docker images yourself, I have you got you covered with a Fabric v1.4.4 Docker Images building guide for Ubuntu 19.10.
+If you would rather build the Docker images yourself, I have you got you covered with a helpful, detailed Fabric v1.4.4 Docker Images [building guide for Ubuntu 19.10](buildfabric.md).
 
 Sample temperature and humidity sensor readings with a Fabric smart contract on latest high performing Linux 64-bit arm64v8 kernel 5.3.0-1018-raspi2 aarch64 on Ubuntu 19.10
 

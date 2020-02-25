@@ -340,6 +340,23 @@ docker exec cli peer chaincode install -n samplecc -v 0 -p github.com/samplecc
 # append to the ledger
 ./3.invokecc.sh
 
+x.x.x.x, 22.50,51.60
+^[34m2020-02-25 19:22:55.636 UTC [chaincodeCmd] InitCmdFactory -> INFO 001^[0m Retrieved channel (mychannel) o
+rderer endpoint: orderer.example.com:7050
+^[34m2020-02-25 19:22:55.648 UTC [chaincodeCmd] chaincodeInvokeOrQuery -> INFO 002^[0m Chaincode invoke succes
+sful. result: status:200
+
+# use watch to get a few samplings
+watch -n 5 ./3.invokecc.sh
+
+Every 5.0s: ./3.invokecc.sh                                                   ubuntu: Tue Feb 25 19:24:11 2020
+
+x.x.x.x, 22.50,51.50
+^[34m2020-02-25 19:24:14.465 UTC [chaincodeCmd] InitCmdFactory -> INFO 001^[0m Retrieved channel (mychannel) o
+rderer endpoint: orderer.example.com:7050
+^[34m2020-02-25 19:24:14.477 UTC [chaincodeCmd] chaincodeInvokeOrQuery -> INFO 002^[0m Chaincode invoke succes
+sful. result: status:200
+
 # access results from the couchdb instance
 # from any browser within the same access subnet
 # run and select the eth0 or wifi 

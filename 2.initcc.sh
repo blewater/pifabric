@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# $1 is any arbitrary text version number not used before for this chaincode
+
 # Exit on first error, print all commands.
 set -e
 
@@ -10,4 +12,4 @@ LOC=$(dig +short myip.opendns.com @resolver1.opendns.com)
 echo "$LOC", "$SAMPLE"
 
 # instantiate or init
-docker exec cli peer chaincode instantiate -n samplecc -v 0 -C mychannel -c '{"Args":["'"${LOC}"'", "'"${SAMPLE}"'"]}'
+docker exec cli peer chaincode instantiate -n samplecc -v $10 -C mychannel -c '{"Args":["'"${LOC}"'", "'"${SAMPLE}"'"]}'

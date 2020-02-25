@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # may be called multiple times
+# $1 is any arbitrary text version number not used before for this chaincode
 
 # Exit on first error, print all commands.
 set -e

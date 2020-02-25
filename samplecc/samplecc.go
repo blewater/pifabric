@@ -73,8 +73,10 @@ func saveSampling(args []string, stub shim.ChaincodeStubInterface) error {
 		time.Now().String() + `"}`
 	samplingJSONasBytes := []byte(samplingJSONasString)
 
+	key := strings.TrimRight(time.Now().String()[:25], " ")
+
 	// Write / append the state to the ledger
-	if err := stub.PutState("sampling", samplingJSONasBytes); err != nil {
+	if err := stub.PutState(key, samplingJSONasBytes); err != nil {
 
 		return err
 	}

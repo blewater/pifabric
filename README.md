@@ -12,13 +12,17 @@ You need the following gadgets:
 * A Raspberry Pi4. Edition with 4Gig Ram. 
 * A kit or separatedly case and power adaptor. 
 * A breadboard
+* A [DHT22 temperature/humidity sensor](https://thepihut.com/products/dht22-temperature-and-humidity-sensor). The DHT-22 sensor readily available at a low cost, features a humidity range of 0 to 100%RH with a ±2% and temperature range of -40 to 80℃ with a ±0.5%.
 * 10+ [dupont wire 20cm male to female](https://www.amazon.com/EDGELEC-Breadboard-Optional-Assorted-Multicolored/dp/B07GD1XFWV/ref=sr_1_3?keywords=dupont+wire+20cm+male+to+female&qid=1582390213&sr=8-3)
 * An HDMI monitor
-* A plain keyboard, wireless preferred with mice included e.g. [Logitech](https://www.amazon.com/Logitech-920-004090-Wireless-Keyboard-K360/dp/B00822GICW/ref=pd_sbs_147_img_2/142-3858854-6761000?_encoding=UTF8&pd_rd_i=B00822GICW&pd_rd_r=c2c5a593-dd7d-49bc-824f-1c25a154702c&pd_rd_w=KqxJf&pd_rd_wg=6ABHf&pf_rd_p=5cfcfe89-300f-47d2-b1ad-a4e27203a02a&pf_rd_r=QC900D6VD4323GA75PH5&psc=1&refRID=QC900D6VD4323GA75PH5). Later you may utilize ssh.
+* A plain keyboard, wireless preferred integrated with a mouse, e.g., Logitech. Later you may utilize ssh. [Logitech](https://www.amazon.com/Logitech-920-004090-Wireless-Keyboard-K360/dp/B00822GICW/ref=pd_sbs_147_img_2/142-3858854-6761000?_encoding=UTF8&pd_rd_i=B00822GICW&pd_rd_r=c2c5a593-dd7d-49bc-824f-1c25a154702c&pd_rd_w=KqxJf&pd_rd_wg=6ABHf&pf_rd_p=5cfcfe89-300f-47d2-b1ad-a4e27203a02a&pf_rd_r=QC900D6VD4323GA75PH5&psc=1&refRID=QC900D6VD4323GA75PH5). Later you may utilize ssh.
 * A standard ethernet cable. You may also utilize the embedded wifi adapter with great results in Ubuntu.
 A high performing [SD card with at least 32Gig](https://www.amazon.com/SanDisk-64GB-Extreme-UHS-I-SDSDXXY-064G-GN4IN/dp/B07H9J1YXN/ref=sr_1_3?crid=3T9H0M95H6N0B&keywords=sd+card+64gb&qid=1582390672&sprefix=sd+card%2Caps%2C308&sr=8-3).
 
+### Connect the DHT-22 sensor on the Pi4 GPIO connector
+There are multiple easy guides to follow to connect the DHT-22 to the GPIO interface of the Pi-4 board. I followed this [guide](https://www.deviceplus.com/raspberry-pi/geekcraft-easy-raspberry-pi-humidity-temperature-sensor/), applying the **signal** connection to the GPIO position BCM24/Board18 (note your position later if you change the selected pin in the golang sampling application), but there are other Pin possibilities allowed by the redundancy of the GPIO.
 
+### Place the Ubuntu 19.10 image on SD card.
 Follow the instructions to [install \*64bit Ubuntu 19.10.](https://ubuntu.com/download/raspberry-pi/thank-you?version=19.10.1&architecture=arm64+raspi3)
 *Please note Hyperledger Fabric requires 64bit OS which excludes the Raspbian OS.
 
@@ -27,9 +31,9 @@ Login to Ubuntu:
   user: ubuntu
   
   pwd: ubuntu
-*You will be forced to change your password* :)
+*You are forced later to change your password :)
 
-### Software updates (when applicable we will use snap to speed up lthe installation process)
+### Software installation
 * Ubuntu updates
 Refer to answers https://askubuntu.com/questions/196768/how-to-install-updates-via-command-line
 
@@ -41,13 +45,14 @@ Refer to answers https://askubuntu.com/questions/196768/how-to-install-updates-v
 
 *(at the time of this writeup the latest Linux ARM kernel is 5.3.0-1018-raspi2)*
 
-* Optionally, you may follow a Ubuntu guide to set a statip IP address and SSH access by public key. 
+* Optionally, you may follow a Ubuntu guide to set a static IP address and SSH access by public key. 
 
 Refer to /etc/netplan apply, ssh-copy-id
   
 * Install **docker** Run these commands:
 ```
-sudo snap install docker
+sudo 
+install docker
 
 sudo groupadd docker
 
@@ -78,26 +83,12 @@ source ~/.bashrc
 # retrieve the golang chaincode shim useful later
 go get -u github.com/hyperledger/fabric/core/chaincode/shim
 
-# sync your user's path to sudo
-# you will need this for sampling data
-echo $PATH
-
-# copy the value
-# sudo visudo 
-# append the path value within the secure path
-# value with : upfront
-# test go in sudo mode
-# Demo from my Pi
- echo $PATH
-
-/home/p/.nvm/versions/node/v8.17.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/usr/local/go/bin
-p@masterpi:~/go/src/github.com/hyperledger/pifabric$ sudo visudo
-p@masterpi:~/go/src/github.com/hyperledger/pifabric$ sudo go version
+sudo go version
 go version go1.11.13 linux/arm64
-p@masterpi:~/go/src/github.com/hyperledger/pifabric$
 ```
 
-### Getting Ready to work with Fabric
+### Access essential repositories
+
 ```
 mkdir -p ~/go/src/github.com/hyperledger/
 cd ~/go/src/github.com/hyperledger/
@@ -105,14 +96,112 @@ cd ~/go/src/github.com/hyperledger/
 # download the repo of this page
 git clone https://github.com/blewater/pifabric
 
-# retrieve the fabric-samples we will work with
+# retrieve the fabric-samples we use
 git clone https://github.com/hyperledger/fabric-samples
 
 # retrieve the chaincode shim useful later
 go get -u github.com/hyperledger/fabric/core/chaincode/shim
 
-# download raspberrypi Docker images
+# go to this repo's cloned local folder
 cd pifabric
+
+```
+
+### Connect the DHT22 sensor on the Pi4 GPIO board
+While
+
+### Install a C DHT22 raspberry lib
+#### Ref http://www.airspayce.com/mikem/bcm2835/
+```
+tar zxvf bcm2835-1.62.tar.gz
+
+cd bcm2835-1.62
+
+./configure
+
+make
+# make sure the check returns good results 
+sudo make check
+
+PASS: test
+============================================================================
+Testsuite summary for bcm2835 1.62
+============================================================================
+# TOTAL: 1
+# PASS:  1
+# SKIP:  0
+# XFAIL: 0
+# FAIL:  0
+# XPASS: 0
+# ERROR: 0
+============================================================================
+
+sudo make install
+
+Making install in src
+make[1]: Entering directory '/home/p/unic/bcm2835-1.62/src'
+make[2]: Entering directory '/home/p/unic/bcm2835-1.62/src'
+ /usr/bin/mkdir -p '/usr/local/lib'
+ /usr/bin/install -c -m 644  libbcm2835.a '/usr/local/lib'
+ ( cd '/usr/local/lib' && ranlib libbcm2835.a )
+ /usr/bin/mkdir -p '/usr/local/include'
+ /usr/bin/install -c -m 644 bcm2835.h '/usr/local/include'
+make[2]: Leaving directory '/home/p/unic/bcm2835-1.62/src'
+make[1]: Leaving directory '/home/p/unic/bcm2835-1.62/src'
+Making install in doc
+make[1]: Entering directory '/home/p/unic/bcm2835-1.62/doc'
+make[2]: Entering directory '/home/p/unic/bcm2835-1.62/doc'
+make[2]: Nothing to be done for 'install-exec-am'.
+make[2]: Nothing to be done for 'install-data-am'.
+make[2]: Leaving directory '/home/p/unic/bcm2835-1.62/doc'
+make[1]: Leaving directory '/home/p/unic/bcm2835-1.62/doc'
+make[1]: Entering directory '/home/p/unic/bcm2835-1.62'
+make[2]: Entering directory '/home/p/unic/bcm2835-1.62'
+make[2]: Nothing to be done for 'install-exec-am'.
+make[2]: Nothing to be done for 'install-data-am'.
+make[2]: Leaving directory '/home/p/unic/bcm2835-1.62'
+make[1]: Leaving directory '/home/p/unic/bcm2835-1.62'
+
+# now we are ready to install the go wrapper
+go get -u github.com/gerp/dht22
+# github.com/gerp/dht22
+In file included from /usr/include/aarch64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:25,
+                 from _cgo_export.c:3:
+/usr/include/features.h:185:3: warning: #warning "_BSD_SOURCE and _SVID_SOURCE are deprecated, use _DEFAULT_SOURCE" [-Wcpp]
+  185 | # warning "_BSD_SOURCE and _SVID_SOURCE are deprecated, use _DEFAULT_SOURCE"
+      |   ^~~~~~~
+# github.com/gerp/dht22
+In file included from /usr/include/aarch64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:25,
+                 from _cgo_export.c:3:
+/usr/include/features.h:185:3: warning: #warning "_BSD_SOURCE and _SVID_SOURCE are deprecated, use _DEFAULT_SOURCE" [-Wcpp]
+  185 | # warning "_BSD_SOURCE and _SVID_SOURCE are deprecated, use _DEFAULT_SOURCE"
+      |   ^~~~~~~
+# github.com/gerp/dht22
+In file included from /usr/include/errno.h:25,
+                 from cgo-gcc-prolog:28:
+/usr/include/features.h:185:3: warning: #warning "_BSD_SOURCE and _SVID_SOURCE are deprecated, use _DEFAULT_SOURCE" [-Wcpp]
+  185 | # warning "_BSD_SOURCE and _SVID_SOURCE are deprecated, use _DEFAULT_SOURCE"
+      |   ^~~~~~~
+# github.com/gerp/dht22
+In file included from /usr/include/aarch64-linux-gnu/bits/libc-header-start.h:33,
+                 from /usr/include/stdio.h:27,
+                 from dht22.c:1:
+/usr/include/features.h:185:3: warning: #warning "_BSD_SOURCE and _SVID_SOURCE are deprecated, use _DEFAULT_SOURCE" [-Wcpp]
+  185 | # warning "_BSD_SOURCE and _SVID_SOURCE are deprecated, use _DEFAULT_SOURCE"
+      |   ^~~~~~~
+
+# test our sample program
+cd ../
+sudo -E go run sample.go
+
+# if successful results in 
+Temperature: 25.3C, Humidity: 40.9%
+```
+### Getting Ready to work with Fabric
+```
+# download raspberrypi Docker images
 ./get-images.sh
 
 # check images for a similar result as this
@@ -203,98 +292,6 @@ docker-compose up -d cli
 # look for "Creating cli ... done"
 ```
 
-### Install a C DHT22 raspberry lib
-#### Ref http://www.airspayce.com/mikem/bcm2835/
-```
-cd ../../pifabric
-
-tar zxvf bcm2835-1.62.tar.gz
-
-cd bcm2835-1.62
-
-./configure
-
-make
-# make sure the check returns good results 
-sudo make check
-
-PASS: test
-============================================================================
-Testsuite summary for bcm2835 1.62
-============================================================================
-# TOTAL: 1
-# PASS:  1
-# SKIP:  0
-# XFAIL: 0
-# FAIL:  0
-# XPASS: 0
-# ERROR: 0
-============================================================================
-
-sudo make install
-
-Making install in src
-make[1]: Entering directory '/home/p/unic/bcm2835-1.62/src'
-make[2]: Entering directory '/home/p/unic/bcm2835-1.62/src'
- /usr/bin/mkdir -p '/usr/local/lib'
- /usr/bin/install -c -m 644  libbcm2835.a '/usr/local/lib'
- ( cd '/usr/local/lib' && ranlib libbcm2835.a )
- /usr/bin/mkdir -p '/usr/local/include'
- /usr/bin/install -c -m 644 bcm2835.h '/usr/local/include'
-make[2]: Leaving directory '/home/p/unic/bcm2835-1.62/src'
-make[1]: Leaving directory '/home/p/unic/bcm2835-1.62/src'
-Making install in doc
-make[1]: Entering directory '/home/p/unic/bcm2835-1.62/doc'
-make[2]: Entering directory '/home/p/unic/bcm2835-1.62/doc'
-make[2]: Nothing to be done for 'install-exec-am'.
-make[2]: Nothing to be done for 'install-data-am'.
-make[2]: Leaving directory '/home/p/unic/bcm2835-1.62/doc'
-make[1]: Leaving directory '/home/p/unic/bcm2835-1.62/doc'
-make[1]: Entering directory '/home/p/unic/bcm2835-1.62'
-make[2]: Entering directory '/home/p/unic/bcm2835-1.62'
-make[2]: Nothing to be done for 'install-exec-am'.
-make[2]: Nothing to be done for 'install-data-am'.
-make[2]: Leaving directory '/home/p/unic/bcm2835-1.62'
-make[1]: Leaving directory '/home/p/unic/bcm2835-1.62'
-
-# now we are ready to install the go wrapper
-go get -u github.com/gerp/dht22
-# github.com/gerp/dht22
-In file included from /usr/include/aarch64-linux-gnu/bits/libc-header-start.h:33,
-                 from /usr/include/stdlib.h:25,
-                 from _cgo_export.c:3:
-/usr/include/features.h:185:3: warning: #warning "_BSD_SOURCE and _SVID_SOURCE are deprecated, use _DEFAULT_SOURCE" [-Wcpp]
-  185 | # warning "_BSD_SOURCE and _SVID_SOURCE are deprecated, use _DEFAULT_SOURCE"
-      |   ^~~~~~~
-# github.com/gerp/dht22
-In file included from /usr/include/aarch64-linux-gnu/bits/libc-header-start.h:33,
-                 from /usr/include/stdlib.h:25,
-                 from _cgo_export.c:3:
-/usr/include/features.h:185:3: warning: #warning "_BSD_SOURCE and _SVID_SOURCE are deprecated, use _DEFAULT_SOURCE" [-Wcpp]
-  185 | # warning "_BSD_SOURCE and _SVID_SOURCE are deprecated, use _DEFAULT_SOURCE"
-      |   ^~~~~~~
-# github.com/gerp/dht22
-In file included from /usr/include/errno.h:25,
-                 from cgo-gcc-prolog:28:
-/usr/include/features.h:185:3: warning: #warning "_BSD_SOURCE and _SVID_SOURCE are deprecated, use _DEFAULT_SOURCE" [-Wcpp]
-  185 | # warning "_BSD_SOURCE and _SVID_SOURCE are deprecated, use _DEFAULT_SOURCE"
-      |   ^~~~~~~
-# github.com/gerp/dht22
-In file included from /usr/include/aarch64-linux-gnu/bits/libc-header-start.h:33,
-                 from /usr/include/stdio.h:27,
-                 from dht22.c:1:
-/usr/include/features.h:185:3: warning: #warning "_BSD_SOURCE and _SVID_SOURCE are deprecated, use _DEFAULT_SOURCE" [-Wcpp]
-  185 | # warning "_BSD_SOURCE and _SVID_SOURCE are deprecated, use _DEFAULT_SOURCE"
-      |   ^~~~~~~
-
-# test our sample program
-cd ../
-sudo -E go run sample.go
-
-# if successful results in 
-Temperature: 25.3C, Humidity: 40.9%
-```
-
 ### Getting to the chaincodes
 ```
 # copy chaincode into peer bound chaincode folder
@@ -330,7 +327,7 @@ docker exec cli peer chaincode install -n samplecc -v 0 -p github.com/samplecc
 
 # * Run Once *
 * invoke chaincode
-# requires priviledged sudo access for accessing 
+# requires privileged sudo access for accessing 
 # the sensor functions to initiate the chaincode
 # it also saves the first sampling in the ledger
 ./2.initcc.sh
@@ -357,7 +354,7 @@ rderer endpoint: orderer.example.com:7050
 ^[34m2020-02-25 19:24:14.477 UTC [chaincodeCmd] chaincodeInvokeOrQuery -> INFO 002^[0m Chaincode invoke succes
 sful. result: status:200
 
-# access results from the couchdb instance
+# access results from the CouchDB instance
 # from any browser within the same access subnet
 # run and select the eth0 or wifi 
 ip r
@@ -367,7 +364,7 @@ default via 192.168.2.1 dev eth0 proto static
 172.27.0.0/16 dev br-32a73e9a7d3b proto kernel scope link src 172.27.0.1
 192.168.2.0/24 dev eth0 proto kernel scope link src 192.168.2.242
 
-# in this case it's the 192.168.2.242 and 5984
+# in this case, it's the 192.168.2.242 and 5984
 # the port also shows when executing docker ps and checking out the docker port
 ```
 #### http://192.168.2.242:5984/_utils/
@@ -377,19 +374,20 @@ the ledger for the mychannel to view the saved readings
 
 You may explore more with the [Fabric tutorials for chaincode development](https://hyperledger-fabric.readthedocs.io/en/release-1.4/tutorials.html)
 
+### Testing with concurrent chaincode calls 
 #### 4 chaincode invoking processes in a single Pi4 4Gg Ram edition
 
-Launched 4 [watch](https://linux.die.net/man/1/watch) processes each invoking the samplecc chaincode with sensor readings every 5, 7, 10 and 20 seconds appears to put no pressure on the latest Pi rendition. 
+Launched 4 [watch](https://linux.die.net/man/1/watch) processes, each invoking the samplecc chaincode with sensor readings every 5, 7, 10, and 20 seconds appears to put no pressure on the latest Pi rendition. 
 
-Granted that this is among the simplest blockchain offerings, it is still no small feat for a $65 board to pull through with a low cpu energy profile. The is the  basic network--a single organization blockchain with a single peer, orderer, transaction endorser and couchdb ledger database featuring the simplistic Solo consensus algorithm all runnning in docker containers. All portrayed sessions are employing ssh. In fact, it appears that the single sensor interface contention among the 4 processes appears to consume the most cpu resources.![4 ssh connections ](img/4-nodes-invoking-chaincodes.png)
+Granted that this is among the simplest blockchain offerings, it is still no small feat for a $65 board to pull through with a low CPU energy profile. The is the  basic network--a single organization blockchain with a single peer, orderer, transaction endorser and CouchDB ledger database featuring the Solo consensus algorithm all runnning in docker containers. All portrayed sessions are employing ssh. In fact, it appears that the single sensor interface contention among the 4 processes appears to consume the most CPU resources.![4 ssh connections ](img/4-nodes-invoking-chaincodes.png)
   
  #### How can you view the accumulated ledger data?
  
- Hyperledger Fabric offers the CouchDB document database (besides other lesser sophisticated options) for all its ledger (world state) and private data collections. Looking at the Pi's couchDb exposed port at 5984 the channe's ledger is actual document collection.You may choose among 3 viewing options: List, Metadata and Json i.e., shown here![couchdb](img/2-chaincodes-ledger-records.png)
+ Hyperledger Fabric offers the CouchDB document database (besides other lesser sophisticated options) for all its ledger (world state) and private data collections. Looking at the Pi's CouchDB exposed port at 5984 the channel's ledger is a document collection. You may choose among 3 viewing options: List, Metadata and Json, i.e., shown here![CouchDB](img/2-chaincodes-ledger-records.png)
  
  #### IoT Blockchain Data Analytics.
  
- By offering easy data export, Hyperledger Fabric offers a no-hassle data-friendly IoT blockchain platform. The data can easily be exported in json format for later machine-learning platforms ingestion. While this exercise, did not demonstrate Fabric's chaincode query capabilities, one may view documentation for performing simple state or richer document based queries.![exported data](img/full-ledger-by-4-nodes.png)
+ By offering easy data export, Hyperledger Fabric offers a no-hassle data-friendly IoT blockchain platform. The data may be exported with ease in json format for subsequent machine-learning platforms ingestion. While this exercise, did not demonstrate Fabric's chaincode query capabilities, one may view documentation for performing state or more productive document-based queries.![exported data](img/full-ledger-by-4-nodes.png)
  
  
 

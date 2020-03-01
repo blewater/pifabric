@@ -5,7 +5,7 @@ For the general Fabric setup guide for RaspberryPi4 is [here](README.md)
 
 ## Getting Started
 
-* clone the Fabric code base
+* clone the Fabric codebase
 ```
 mkdir -p ~/go/src/github.com/hyperledger/
 
@@ -19,7 +19,7 @@ git clone https://github.com/hyperledger/fabric-chaincode-go
 
 ```
 
-## Building the 3rd party base images (couchdb, kakfa, zookeeper)
+## Building the 3rd party base images (CouchDB, Kakfa, Zookeeper)
 
 ```
 sudo apt install make #install make
@@ -47,7 +47,7 @@ on line 78,79 enter your dockerhub credentials
     --username=blewater \
     --password=xxxxxxxxxx \
 
-### Start the lenghthy build process
+### Start the lengthy build process
 
 ```
 make all

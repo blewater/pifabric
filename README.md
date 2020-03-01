@@ -1,4 +1,7 @@
 # Hyperledger Fabric Chaincode for 64-bit Raspberry-Pi4 and Pi3
+
+*For an introduction to the motivation and existence of this repository, you may read a [pdf report describing this Blockchain project](PROGRAMMING_THE_FABRIC_BLOCKCHAIN_ON_RASPBERRY_PI4.pdf)*
+
 Batteries included: utilize the prepared Fabric [Docker Images](https://hub.docker.com/r/blewater).
 
 If you would rather build the Docker images yourself, I have you got you covered with a helpful, detailed Fabric v1.4.4 Docker Images [building guide for Ubuntu 19.10](buildfabric.md).
